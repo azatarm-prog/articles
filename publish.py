@@ -336,31 +336,23 @@ def _insert_toc(html: str) -> str:
     return html
 
 
-def _fix_footnote_anchors(html: str) -> str:
-    """Replace GitHub-style footnote anchors with simple #fn-N / #fnref-N."""
+def _fix_footnotes_for_medium(html: str) -> str:
+    """Remove footnote links (Medium converts anchors to absolute URLs back to source)."""
     html = html.replace('#user-content-fn-', '#fn-')
     html = html.replace('#user-content-fnref-', '#fnref-')
-    # Add id to inline footnote refs: <a href="#fn-N">N</a> -> <a id="fnref-N" href="#fn-N">N</a>
-    html = re.sub(
-        r'<a href="#fn-(\d+)">(\d+)</a>',
-        r'<a id="fnref-\1" href="#fn-\1">\2</a>',
-        html,
-    )
-    # Add id to footnote <li> items in the Footnotes section
-    counter = [0]
-    def _add_li_id(m):
-        counter[0] += 1
-        return f'<li id="fn-{counter[0]}">'
-    parts = html.split('<h2>Footnotes</h2>')
-    if len(parts) == 2:
-        parts[1] = re.sub(r'<li>', _add_li_id, parts[1])
-        html = '<h2>Footnotes</h2>'.join(parts)
+    # Remove inline footnote links, keep just the number
+    html = re.sub(r'<a[^>]*href="#fn-\d+"[^>]*>(\d+)</a>', r'\1', html)
+    # Remove back-links in footnotes
+    html = re.sub(r'\s*<a href="#fnref-[^"]*">↩\d*</a>', '', html)
     return html
 
 
-def _numbered_h2_to_h3(html: str) -> str:
-    """Convert numbered section <h2> to <h3> to reduce spacing on Medium."""
-    return re.sub(r'<h2>(\d+\.[^<]*)</h2>', r'<h3>\1</h3>', html)
+def _headings_to_bold_paragraphs(html: str) -> str:
+    """Convert <h2>/<h3> numbered sections to <p><strong> (Medium adds extra spacing to headings)."""
+    html = re.sub(r'<h[23]>(\d+\..*?)</h[23]>', r'<p><strong>\1</strong></p>', html)
+    # Also convert unnumbered <h3> subsection titles
+    html = re.sub(r'<h3>(.*?)</h3>', r'<p><strong>\1</strong></p>', html)
+    return html
 
 
 def convert_markdown(md_text: str) -> str:
@@ -377,8 +369,8 @@ def convert_markdown(md_text: str) -> str:
     html = _tables_to_prose(html)
     html = _remove_hr_before_headings(html)
     html = _insert_toc(html)
-    html = _numbered_h2_to_h3(html)
-    html = _fix_footnote_anchors(html)
+    html = _headings_to_bold_paragraphs(html)
+    html = _fix_footnotes_for_medium(html)
     return html
 
 
