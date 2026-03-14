@@ -278,25 +278,26 @@ def _merge_consecutive_lists(html: str) -> str:
     return html
 
 
-def _tables_to_medium_lists(html: str) -> str:
-    """Convert HTML tables to <p>+<ul>/<li> for Medium compatibility."""
+def _tables_to_prose(html: str) -> str:
+    """Convert HTML tables to plain prose paragraphs for Medium compatibility."""
     def _convert_table(match):
         table_html = match.group(0)
         headers = re.findall(r'<th>(.*?)</th>', table_html)
         rows = re.findall(r'<tr>(.*?)</tr>', table_html, re.DOTALL)
-        blocks = []
+        sentences = []
         for row in rows:
             cells = re.findall(r'<td>(.*?)</td>', row)
             if not cells:
                 continue
             label = re.sub(r'</?strong>', '', cells[0])
-            items = []
+            parts = []
             for i, cell in enumerate(cells[1:], 1):
                 header = headers[i] if i < len(headers) else f'Column {i}'
-                items.append(f'<li><em>{header}:</em> {cell}</li>')
-            block = f'<p><strong>{label}</strong></p>\n<ul>\n' + '\n'.join(items) + '\n</ul>'
-            blocks.append(block)
-        return '\n'.join(blocks)
+                parts.append(f'{header}: {cell}')
+            sentences.append(
+                f'<p><strong>{label}.</strong> ' + '. '.join(parts) + '</p>'
+            )
+        return '\n'.join(sentences)
 
     return re.sub(
         r'<div class="table-wrapper"><table>.*?</table></div>',
@@ -313,7 +314,7 @@ def _remove_hr_before_headings(html: str) -> str:
 
 def _insert_toc(html: str) -> str:
     """Insert a Table of Contents after the Abstract section."""
-    headings = re.findall(r'<h2>(\d+\.\s+.+?)</h2>', html)
+    headings = re.findall(r'<h[23]>(\d+\.\s+.+?)</h[23]>', html)
     if not headings:
         return html
     toc_lines = ['<h2>Table of Contents</h2>']
@@ -335,6 +336,11 @@ def _insert_toc(html: str) -> str:
     return html
 
 
+def _numbered_h2_to_h3(html: str) -> str:
+    """Convert numbered section <h2> to <h3> to reduce spacing on Medium."""
+    return re.sub(r'<h2>(\d+\.[^<]*)</h2>', r'<h3>\1</h3>', html)
+
+
 def convert_markdown(md_text: str) -> str:
     """Convert Markdown to HTML, using python-markdown if available."""
     md_text = _strip_metadata_lines(md_text)
@@ -346,9 +352,10 @@ def convert_markdown(md_text: str) -> str:
     else:
         html = _markdown_to_html_fallback(md_text)
     html = _merge_consecutive_lists(html)
-    html = _tables_to_medium_lists(html)
+    html = _tables_to_prose(html)
     html = _remove_hr_before_headings(html)
     html = _insert_toc(html)
+    html = _numbered_h2_to_h3(html)
     return html
 
 
