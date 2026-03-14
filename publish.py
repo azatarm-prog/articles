@@ -278,26 +278,25 @@ def _merge_consecutive_lists(html: str) -> str:
     return html
 
 
-def _tables_to_medium_paragraphs(html: str) -> str:
-    """Convert HTML tables to <p>/<strong>/<em>/<br> (Medium strips <table> and <div>)."""
+def _tables_to_medium_lists(html: str) -> str:
+    """Convert HTML tables to <p>+<ul>/<li> (Medium strips <table>, <div>, <br>)."""
     def _convert_table(match):
         table_html = match.group(0)
         headers = re.findall(r'<th>(.*?)</th>', table_html)
         rows = re.findall(r'<tr>(.*?)</tr>', table_html, re.DOTALL)
-        paragraphs = []
+        blocks = []
         for row in rows:
             cells = re.findall(r'<td>(.*?)</td>', row)
             if not cells:
                 continue
             label = re.sub(r'</?strong>', '', cells[0])
-            lines = [f'<p><strong>{label}</strong><br>']
+            items = []
             for i, cell in enumerate(cells[1:], 1):
                 header = headers[i] if i < len(headers) else f'Column {i}'
-                lines.append(f'<em>{header}:</em> {cell}<br>')
-            # Remove trailing <br> from last line and close <p>
-            lines[-1] = lines[-1].rstrip('<br>') + '</p>'
-            paragraphs.append('\n'.join(lines))
-        return '\n'.join(paragraphs)
+                items.append(f'<li><em>{header}:</em> {cell}</li>')
+            block = f'<p><strong>{label}</strong></p>\n<ul>\n' + '\n'.join(items) + '\n</ul>'
+            blocks.append(block)
+        return '\n'.join(blocks)
 
     return re.sub(
         r'<div class="table-wrapper"><table>.*?</table></div>',
@@ -318,7 +317,7 @@ def convert_markdown(md_text: str) -> str:
     else:
         html = _markdown_to_html_fallback(md_text)
     html = _merge_consecutive_lists(html)
-    html = _tables_to_medium_paragraphs(html)
+    html = _tables_to_medium_lists(html)
     return html
 
 
