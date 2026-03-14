@@ -272,15 +272,23 @@ def _strip_metadata_lines(md_text: str) -> str:
     return '\n'.join(filtered)
 
 
+def _merge_consecutive_lists(html: str) -> str:
+    """Merge consecutive <ol> elements into a single list (fixes footnotes split by blank lines)."""
+    html = re.sub(r'</ol>\s*<ol>', '', html)
+    return html
+
+
 def convert_markdown(md_text: str) -> str:
     """Convert Markdown to HTML, using python-markdown if available."""
     md_text = _strip_metadata_lines(md_text)
     if HAS_MARKDOWN_LIB:
-        return markdown.markdown(
+        html = markdown.markdown(
             md_text,
             extensions=['tables', 'fenced_code', 'footnotes', 'toc', 'attr_list'],
         )
-    return _markdown_to_html_fallback(md_text)
+    else:
+        html = _markdown_to_html_fallback(md_text)
+    return _merge_consecutive_lists(html)
 
 
 # ---------------------------------------------------------------------------
