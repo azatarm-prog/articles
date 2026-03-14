@@ -1,5 +1,8 @@
 # Environment Setup
 
+![Environment Setup](images/environment-setup-00-banner.png)
+
+
 ## Credentials
 
 This project uses a `.env` file (gitignored) for secrets. Load it at the start of a session:
