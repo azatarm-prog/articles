@@ -3,7 +3,7 @@
 Article Image Enrichment Tool
 
 Enriches Markdown articles with AI-generated 3D isometric images using
-Google's Gemini (prompt creation) + Imagen (rendering) APIs.
+Google's Nano Banana (Gemini 2.5 Flash Image) API — single-step generation.
 
 By default, generates only a single hero/banner image placed right after
 the article title — which becomes Medium's featured image on import.
@@ -60,13 +60,9 @@ STYLE_PREFIX = (
     "soft volumetric lighting, 16:9 aspect ratio, professional corporate-grade rendering. "
 )
 
-GEMINI_ENDPOINT = (
+NANO_BANANA_ENDPOINT = (
     "https://generativelanguage.googleapis.com/v1beta/models"
-    "/gemini-2.0-flash:generateContent"
-)
-IMAGEN_ENDPOINT = (
-    "https://generativelanguage.googleapis.com/v1beta/models"
-    "/imagen-3.0-generate-002:predict"
+    "/gemini-2.5-flash-image:generateContent"
 )
 
 DEFAULT_IMAGES_DIR = "images"
@@ -193,7 +189,7 @@ def image_filename(article_title: str, section_index: int, is_banner: bool) -> s
 
 
 # ---------------------------------------------------------------------------
-# Section 4: API Calls (Gemini + Imagen)
+# Section 4: API Calls (Nano Banana — Gemini 2.5 Flash Image)
 # ---------------------------------------------------------------------------
 
 def _api_post(url: str, api_key: str, payload: dict) -> dict:
@@ -210,7 +206,7 @@ def _api_post(url: str, api_key: str, payload: dict) -> dict:
         method="POST",
     )
     try:
-        with urllib.request.urlopen(req, timeout=90) as resp:
+        with urllib.request.urlopen(req, timeout=120) as resp:
             return json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
         error_body = e.read().decode("utf-8", errors="replace")
@@ -243,43 +239,148 @@ def _api_post_with_retry(url: str, api_key: str, payload: dict) -> dict:
         raise
 
 
-def generate_image_prompt(section: Section, api_key: str) -> str:
-    """Call Gemini to generate an image prompt for a section."""
-    prompt_text = textwrap.dedent(f"""\
-        Article section: {section.heading}
+def build_image_prompt(section: Section) -> str:
+    """Craft a detailed, style-guide-strict image prompt for a section.
 
-        {section.content_preview}
+    Analyzes the section heading and content to build a rich visual
+    description with specific 3D isometric objects, compositions, and
+    metaphors — all strictly within the style guide palette and format.
+    """
+    heading = section.heading.lower()
+    preview = section.content_preview.lower()
 
-        Style requirements:
-        {STYLE_GUIDE}
+    # Map conceptual themes to specific 3D isometric visual elements
+    visual_elements = []
 
-        Task: Generate a descriptive image prompt for a 3D isometric illustration \
-that visually represents the concepts in this section. Describe specific visual elements, \
-objects, and compositions that capture the essence of the content.
+    # Bitcoin / cryptocurrency motifs
+    if any(w in heading + preview for w in ["bitcoin", "btc", "bsv", "cryptocurrency", "coin"]):
+        visual_elements.append(
+            "a luminous Bitcoin coin rendered as a thick 3D disc with the B symbol "
+            "embossed on top, glowing neon teal #00D4AA, hovering above the platform"
+        )
 
-        Return ONLY the image prompt text, nothing else.
-    """)
-    payload = {"contents": [{"parts": [{"text": prompt_text}]}]}
-    response = _api_post_with_retry(GEMINI_ENDPOINT, api_key, payload)
-    try:
-        return response["candidates"][0]["content"]["parts"][0]["text"].strip()
-    except (KeyError, IndexError) as e:
-        raise RuntimeError(f"Unexpected Gemini response: {response}") from e
+    # DNA / genetics / protocol
+    if any(w in heading + preview for w in ["dna", "genetic", "protocol", "code", "blueprint"]):
+        visual_elements.append(
+            "a glowing double helix made of translucent teal #00D4AA and electric blue #0098EA "
+            "interlocking blocks rising from the grid floor, each strand composed of small "
+            "code-block segments connected by luminous data bridges"
+        )
+
+    # Network / nodes / distributed
+    if any(w in heading + preview for w in ["network", "node", "distributed", "peer", "p2p"]):
+        visual_elements.append(
+            "a constellation of interconnected cube-shaped nodes arranged in a decentralized "
+            "mesh, connected by glowing electric blue #0098EA data lines with small pulsing "
+            "packets traveling along them"
+        )
+
+    # Mining / proof of work / energy / metabolism
+    if any(w in heading + preview for w in ["mining", "proof-of-work", "energy", "metabol", "hash"]):
+        visual_elements.append(
+            "a cluster of blocky 3D mining rigs on stepped platforms with emanating "
+            "heat waves rendered as teal energy arcs, feeding into a central processing "
+            "tower that outputs glowing golden blocks"
+        )
+
+    # Evolution / life / organism / symbiosis
+    if any(w in heading + preview for w in ["life", "organism", "evolut", "symbio", "alive", "biological"]):
+        visual_elements.append(
+            "an organic-mechanical hybrid form — a tree-like structure with circuit-board "
+            "branches bearing glowing teal leaf-nodes, its roots extending into a digital "
+            "substrate grid, symbolizing digital life"
+        )
+
+    # Fork / divergence / species
+    if any(w in heading + preview for w in ["fork", "diverge", "species", "split", "segwit"]):
+        visual_elements.append(
+            "a central blockchain column that splits into two diverging paths — one path "
+            "glowing healthy teal #00D4AA continuing straight, the other curving away in "
+            "dimmer blue, with small broken chain links at the split point"
+        )
+
+    # Scaling / growth / blocks
+    if any(w in heading + preview for w in ["scal", "growth", "block size", "capacity", "unbounded"]):
+        visual_elements.append(
+            "a series of progressively larger 3D blocks ascending like stairs, each block "
+            "larger than the last, with data streams in electric blue #0098EA flowing into "
+            "them, the largest block glowing brightest teal at the top"
+        )
+
+    # Ledger / record / transaction
+    if any(w in heading + preview for w in ["ledger", "record", "transaction", "chain"]):
+        visual_elements.append(
+            "a chain of interlocked 3D blocks stretching into the distance on the grid floor, "
+            "each block semi-transparent showing tiny transaction records inside, connected "
+            "by glowing teal hash-links"
+        )
+
+    # Security / defense / integrity
+    if any(w in heading + preview for w in ["secur", "defen", "integr", "protect", "immutab"]):
+        visual_elements.append(
+            "a fortified 3D shield or vault structure with layered hexagonal armor plates "
+            "in dark tones, surrounded by orbiting lock icons glowing teal #00D4AA, with "
+            "a bright keyhole emitting white light"
+        )
+
+    # Homeostasis / difficulty / stability
+    if any(w in heading + preview for w in ["homeosta", "difficult", "stabil", "equilibr", "balance"]):
+        visual_elements.append(
+            "a balanced scale or gyroscope mechanism on a central pedestal, with glowing "
+            "teal measurement dials and self-adjusting counterweights, emanating a calm "
+            "blue aura of stability"
+        )
+
+    # Default fallback — generic tech/article visual
+    if not visual_elements:
+        visual_elements.append(
+            "a central elevated 3D platform with an abstract geometric sculpture representing "
+            "the article's theme, surrounded by floating data panels and holographic displays "
+            "showing key concepts, all glowing in teal and blue accents"
+        )
+
+    # Build the full prompt
+    scene_description = "; ".join(visual_elements)
+
+    prompt = (
+        f"{STYLE_PREFIX}"
+        f"Scene depicting the concept '{section.heading}': {scene_description}. "
+        f"The scene sits on a dark isometric grid floor with subtle reflections. "
+        f"Soft volumetric lighting casts atmospheric glows with subtle halos around "
+        f"the brightest elements. Clean, professional composition with dimensional depth. "
+        f"No text, no watermarks, no UI elements — pure 3D isometric illustration."
+    )
+
+    return prompt
 
 
-def generate_image(image_prompt: str, api_key: str) -> bytes:
-    """Call Imagen to generate a PNG from an image prompt."""
-    full_prompt = STYLE_PREFIX + image_prompt
+def generate_image_nanobana(section: Section, api_key: str) -> bytes:
+    """Generate a PNG image using Nano Banana (Gemini 2.5 Flash Image).
+
+    Single API call that both understands the content and generates the image
+    directly, replacing the old two-step Gemini+Imagen approach.
+    """
+    prompt = build_image_prompt(section)
+
     payload = {
-        "instances": [{"prompt": full_prompt}],
-        "parameters": {"sampleCount": 1, "aspectRatio": "16:9"},
+        "contents": [{"parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "responseModalities": ["IMAGE"],
+            "imageConfig": {"aspectRatio": "16:9"},
+        },
     }
-    response = _api_post_with_retry(IMAGEN_ENDPOINT, api_key, payload)
+
+    response = _api_post_with_retry(NANO_BANANA_ENDPOINT, api_key, payload)
+
     try:
-        b64_data = response["predictions"][0]["bytesBase64Encoded"]
-        return base64.b64decode(b64_data)
+        parts = response["candidates"][0]["content"]["parts"]
+        for part in parts:
+            if "inlineData" in part:
+                b64_data = part["inlineData"]["data"]
+                return base64.b64decode(b64_data)
+        raise RuntimeError(f"No image data in Nano Banana response: {list(parts[0].keys()) if parts else 'empty'}")
     except (KeyError, IndexError) as e:
-        raise RuntimeError(f"Unexpected Imagen response: {response}") from e
+        raise RuntimeError(f"Unexpected Nano Banana response: {json.dumps(response)[:300]}") from e
 
 
 # ---------------------------------------------------------------------------
@@ -371,17 +472,8 @@ def enrich(args) -> None:
         print(f"\n  [{idx + 1}/{len(selected)}] {label}")
 
         if args.dry_run:
-            # Generate and display the prompt without calling the image API
-            if api_key:
-                try:
-                    print("    Generating image prompt via Gemini...")
-                    image_prompt = generate_image_prompt(section, api_key)
-                    print(f"    Prompt: {image_prompt[:200]}...")
-                    time.sleep(RATE_LIMIT_SLEEP)
-                except RuntimeError as e:
-                    print(f"    WARNING: Could not generate prompt: {e}", file=sys.stderr)
-            else:
-                print(f"    Content preview: {section.content_preview[:120]}...")
+            prompt = build_image_prompt(section)
+            print(f"    Prompt: {prompt[:200]}...")
             print(f"    Would save to: {images_dir}/{fname}")
             continue
 
@@ -393,18 +485,10 @@ def enrich(args) -> None:
             continue
 
         try:
-            # Step 1: Generate image prompt via Gemini
-            print("    Generating image prompt via Gemini...")
-            image_prompt = generate_image_prompt(section, api_key)
-            print(f"    Prompt: {image_prompt[:120]}...")
+            print("    Generating image via Nano Banana...")
+            png_bytes = generate_image_nanobana(section, api_key)
             time.sleep(RATE_LIMIT_SLEEP)
 
-            # Step 2: Generate image via Imagen
-            print("    Generating image via Imagen...")
-            png_bytes = generate_image(image_prompt, api_key)
-            time.sleep(RATE_LIMIT_SLEEP)
-
-            # Step 3: Save
             save_image(png_bytes, fname, images_dir)
             print(f"    Saved: {images_dir}/{fname}  ({len(png_bytes):,} bytes)")
 
@@ -449,7 +533,7 @@ def main():
     parser = argparse.ArgumentParser(
         description=(
             "Enrich a Markdown article with AI-generated 3D isometric images "
-            "using Google Gemini + Imagen APIs."
+            "using Nano Banana (Gemini 2.5 Flash Image) API."
         ),
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=textwrap.dedent("""\
