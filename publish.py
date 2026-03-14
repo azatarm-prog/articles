@@ -337,21 +337,24 @@ def _insert_toc(html: str) -> str:
 
 
 def _fix_footnotes_for_medium(html: str) -> str:
-    """Remove footnote links (Medium converts anchors to absolute URLs back to source)."""
+    """Remove footnote links and wrap numbers in brackets for Medium."""
     html = html.replace('#user-content-fn-', '#fn-')
     html = html.replace('#user-content-fnref-', '#fnref-')
-    # Remove inline footnote links, keep just the number
-    html = re.sub(r'<a[^>]*href="#fn-\d+"[^>]*>(\d+)</a>', r'\1', html)
+    # Remove inline footnote links, keep just the number in brackets
+    html = re.sub(r'<a[^>]*href="#fn-\d+"[^>]*>(\d+)</a>', r'[\1]', html)
+    # Bracket any remaining bare footnote numbers after punctuation
+    html = re.sub(r'(?<=[."\u201D)]) (\d{1,2})(?=[ <])', r' [\1]', html)
+    html = re.sub(r'(?<=\.) (\d{1,2}) (?=[A-Z])', r' [\1] ', html)
     # Remove back-links in footnotes
     html = re.sub(r'\s*<a href="#fnref-[^"]*">↩\d*</a>', '', html)
     return html
 
 
-def _headings_to_bold_paragraphs(html: str) -> str:
-    """Convert <h2>/<h3> numbered sections to <p><strong> (Medium adds extra spacing to headings)."""
-    html = re.sub(r'<h[23]>(\d+\..*?)</h[23]>', r'<p><strong>\1</strong></p>', html)
+def _headings_to_h1(html: str) -> str:
+    """Convert numbered <h2>/<h3> sections to <h1> for Medium."""
+    html = re.sub(r'<h[23]>(\d+\..*?)</h[23]>', r'<h1>\1</h1>', html)
     # Also convert unnumbered <h3> subsection titles
-    html = re.sub(r'<h3>(.*?)</h3>', r'<p><strong>\1</strong></p>', html)
+    html = re.sub(r'<h3>(.*?)</h3>', r'<h1>\1</h1>', html)
     return html
 
 
@@ -369,7 +372,7 @@ def convert_markdown(md_text: str) -> str:
     html = _tables_to_prose(html)
     html = _remove_hr_before_headings(html)
     html = _insert_toc(html)
-    html = _headings_to_bold_paragraphs(html)
+    html = _headings_to_h1(html)
     html = _fix_footnotes_for_medium(html)
     return html
 
