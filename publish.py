@@ -278,6 +278,43 @@ def _merge_consecutive_lists(html: str) -> str:
     return html
 
 
+def _tables_to_styled_grid(html: str) -> str:
+    """Convert HTML tables to styled grid divs (Medium strips <table> on import)."""
+    def _convert_table(match):
+        table_html = match.group(0)
+        headers = re.findall(r'<th>(.*?)</th>', table_html)
+        rows = re.findall(r'<tr>(.*?)</tr>', table_html, re.DOTALL)
+        grid_rows = []
+        for row in rows:
+            cells = re.findall(r'<td>(.*?)</td>', row)
+            if not cells:
+                continue
+            # First cell is the label (strip <strong> tags for the grid-label)
+            label = re.sub(r'</?strong>', '', cells[0])
+            fields = []
+            for i, cell in enumerate(cells[1:], 1):
+                header = headers[i] if i < len(headers) else f'Column {i}'
+                fields.append(
+                    f'<div class="grid-field">'
+                    f'<span class="field-name">{header}:</span> {cell}'
+                    f'</div>'
+                )
+            grid_rows.append(
+                f'<div class="grid-row">\n'
+                f'<div class="grid-label">{label}</div>\n'
+                + '\n'.join(fields)
+                + '\n</div>'
+            )
+        return '<div class="styled-grid">\n' + '\n'.join(grid_rows) + '\n</div>'
+
+    return re.sub(
+        r'<div class="table-wrapper"><table>.*?</table></div>',
+        _convert_table,
+        html,
+        flags=re.DOTALL,
+    )
+
+
 def convert_markdown(md_text: str) -> str:
     """Convert Markdown to HTML, using python-markdown if available."""
     md_text = _strip_metadata_lines(md_text)
@@ -288,7 +325,9 @@ def convert_markdown(md_text: str) -> str:
         )
     else:
         html = _markdown_to_html_fallback(md_text)
-    return _merge_consecutive_lists(html)
+    html = _merge_consecutive_lists(html)
+    html = _tables_to_styled_grid(html)
+    return html
 
 
 # ---------------------------------------------------------------------------
@@ -567,6 +606,44 @@ def build_html_page(
 
             tbody tr:hover {{
                 background: #f0f7f0;
+            }}
+
+            /* ── Styled Grid (Medium-compatible table alternative) ── */
+            .styled-grid {{
+                margin: 1.8em 0;
+            }}
+
+            .grid-row {{
+                padding: 1em 1.2em;
+                margin-bottom: 0.6em;
+                background: #f9faf9;
+                border-left: 3px solid #1a8917;
+                border-radius: 0 6px 6px 0;
+            }}
+
+            .grid-row:nth-child(even) {{
+                background: #f4f5f4;
+            }}
+
+            .grid-label {{
+                font-family: 'Source Sans Pro', sans-serif;
+                font-weight: 700;
+                font-size: 1.05rem;
+                color: #0a0a0a;
+                margin-bottom: 0.4em;
+            }}
+
+            .grid-field {{
+                font-size: 0.95rem;
+                color: #2a2a2a;
+                margin-bottom: 0.3em;
+                line-height: 1.6;
+            }}
+
+            .grid-field .field-name {{
+                font-family: 'Source Sans Pro', sans-serif;
+                font-weight: 600;
+                color: #555;
             }}
 
             /* ── Code ────────────────────────────────────────── */
