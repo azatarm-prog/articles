@@ -278,34 +278,26 @@ def _merge_consecutive_lists(html: str) -> str:
     return html
 
 
-def _tables_to_styled_grid(html: str) -> str:
-    """Convert HTML tables to styled grid divs (Medium strips <table> on import)."""
+def _tables_to_medium_paragraphs(html: str) -> str:
+    """Convert HTML tables to <p>/<strong>/<em>/<br> (Medium strips <table> and <div>)."""
     def _convert_table(match):
         table_html = match.group(0)
         headers = re.findall(r'<th>(.*?)</th>', table_html)
         rows = re.findall(r'<tr>(.*?)</tr>', table_html, re.DOTALL)
-        grid_rows = []
+        paragraphs = []
         for row in rows:
             cells = re.findall(r'<td>(.*?)</td>', row)
             if not cells:
                 continue
-            # First cell is the label (strip <strong> tags for the grid-label)
             label = re.sub(r'</?strong>', '', cells[0])
-            fields = []
+            lines = [f'<p><strong>{label}</strong><br>']
             for i, cell in enumerate(cells[1:], 1):
                 header = headers[i] if i < len(headers) else f'Column {i}'
-                fields.append(
-                    f'<div class="grid-field">'
-                    f'<span class="field-name">{header}:</span> {cell}'
-                    f'</div>'
-                )
-            grid_rows.append(
-                f'<div class="grid-row">\n'
-                f'<div class="grid-label">{label}</div>\n'
-                + '\n'.join(fields)
-                + '\n</div>'
-            )
-        return '<div class="styled-grid">\n' + '\n'.join(grid_rows) + '\n</div>'
+                lines.append(f'<em>{header}:</em> {cell}<br>')
+            # Remove trailing <br> from last line and close <p>
+            lines[-1] = lines[-1].rstrip('<br>') + '</p>'
+            paragraphs.append('\n'.join(lines))
+        return '\n'.join(paragraphs)
 
     return re.sub(
         r'<div class="table-wrapper"><table>.*?</table></div>',
@@ -326,7 +318,7 @@ def convert_markdown(md_text: str) -> str:
     else:
         html = _markdown_to_html_fallback(md_text)
     html = _merge_consecutive_lists(html)
-    html = _tables_to_styled_grid(html)
+    html = _tables_to_medium_paragraphs(html)
     return html
 
 
