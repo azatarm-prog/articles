@@ -278,26 +278,25 @@ def _merge_consecutive_lists(html: str) -> str:
     return html
 
 
-def _tables_to_prose(html: str) -> str:
-    """Convert HTML tables to plain prose paragraphs (Medium strips tables entirely)."""
+def _tables_to_medium_lists(html: str) -> str:
+    """Convert HTML tables to <p>+<ul>/<li> for Medium compatibility."""
     def _convert_table(match):
         table_html = match.group(0)
         headers = re.findall(r'<th>(.*?)</th>', table_html)
         rows = re.findall(r'<tr>(.*?)</tr>', table_html, re.DOTALL)
-        sentences = []
+        blocks = []
         for row in rows:
             cells = re.findall(r'<td>(.*?)</td>', row)
             if not cells:
                 continue
             label = re.sub(r'</?strong>', '', cells[0])
-            parts = []
+            items = []
             for i, cell in enumerate(cells[1:], 1):
                 header = headers[i] if i < len(headers) else f'Column {i}'
-                parts.append(f'{header}: {cell}')
-            sentences.append(
-                f'<p><strong>{label}.</strong> ' + '. '.join(parts) + '</p>'
-            )
-        return '\n'.join(sentences)
+                items.append(f'<li><em>{header}:</em> {cell}</li>')
+            block = f'<p><strong>{label}</strong></p>\n<ul>\n' + '\n'.join(items) + '\n</ul>'
+            blocks.append(block)
+        return '\n'.join(blocks)
 
     return re.sub(
         r'<div class="table-wrapper"><table>.*?</table></div>',
@@ -318,7 +317,7 @@ def convert_markdown(md_text: str) -> str:
     else:
         html = _markdown_to_html_fallback(md_text)
     html = _merge_consecutive_lists(html)
-    html = _tables_to_prose(html)
+    html = _tables_to_medium_lists(html)
     return html
 
 
