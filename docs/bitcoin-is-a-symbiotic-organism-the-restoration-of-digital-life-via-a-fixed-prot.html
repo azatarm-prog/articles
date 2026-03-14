@@ -166,6 +166,44 @@
                 box-shadow: 0 1px 4px rgba(0,0,0,0.08);
             }
 
+            /* ── Styled Grid (Medium-compatible table alternative) ── */
+            .styled-grid {
+                margin: 1.8em 0;
+            }
+
+            .grid-row {
+                padding: 1em 1.2em;
+                margin-bottom: 0.6em;
+                background: #f9faf9;
+                border-left: 3px solid #1a8917;
+                border-radius: 0 6px 6px 0;
+            }
+
+            .grid-row:nth-child(even) {
+                background: #f4f5f4;
+            }
+
+            .grid-label {
+                font-family: 'Source Sans Pro', sans-serif;
+                font-weight: 700;
+                font-size: 1.05rem;
+                color: #0a0a0a;
+                margin-bottom: 0.4em;
+            }
+
+            .grid-field {
+                font-size: 0.95rem;
+                color: #2a2a2a;
+                margin-bottom: 0.3em;
+                line-height: 1.6;
+            }
+
+            .grid-field .field-name {
+                font-family: 'Source Sans Pro', sans-serif;
+                font-weight: 600;
+                color: #555;
+            }
+
             table {
                 width: 100%;
                 border-collapse: collapse;
@@ -341,7 +379,43 @@
 <hr>
 <h2>2. What Makes Something Alive? Applying Biological Criteria to Bitcoin</h2>
 <p>Before we can meaningfully establish that Bitcoin is a living organism, we must be precise about what we mean by "life." The most widely accepted framework identifies seven core characteristics that define living systems. Bitcoin satisfies each of these criteria.</p>
-<div class="table-wrapper"><table><thead><tr><th>Characteristic of Life</th><th>Biological Example</th><th>Bitcoin Equivalent</th></tr></thead><tbody><tr><td><strong>Growth</strong></td><td>An organism increases in size and complexity over time</td><td>The network grows in nodes, hashrate, users, and ecosystem complexity; the ledger grows with every block</td></tr><tr><td><strong>Reproduction</strong></td><td>Organisms produce new individuals that carry forward their essential structure</td><td>The network spawns new nodes, each carrying a complete copy of the ledger and consensus rules; protocol forks generate descendant organisms that inherit the parent's full transaction history and codebase</td></tr><tr><td><strong>Heredity</strong></td><td>Traits are passed from parent to offspring</td><td>Bitcoin inherits cryptographic hashing, digital signatures, P2P networking, and "unforgeable costliness" from predecessor systems (HashCash, b-money, bit gold)</td></tr><tr><td><strong>Homeostasis</strong></td><td>Internal conditions are maintained despite external changes</td><td>The difficulty adjustment algorithm maintains a stable ten-minute block time regardless of changes in global hashrate</td></tr><tr><td><strong>Metabolism</strong></td><td>Energy is consumed to maintain internal order</td><td>Proof-of-Work consumes electrical energy to create cryptographic security and maintain the integrity of the ledger</td></tr><tr><td><strong>Cellular Organization</strong></td><td>Organisms are composed of discrete functional units</td><td>The network consists of nodes (self-sustaining functional entities); the ledger consists of blocks (discrete data cells linked in sequence)</td></tr><tr><td><strong>Response to Environment</strong></td><td>Organisms react to external stimuli</td><td>Bitcoin responds to price changes, regulatory actions, technological advances, and network attacks without central coordination</td></tr></tbody></table></div>
+<div class="styled-grid">
+<div class="grid-row">
+<div class="grid-label">Growth</div>
+<div class="grid-field"><span class="field-name">Biological:</span> An organism increases in size and complexity over time</div>
+<div class="grid-field"><span class="field-name">Bitcoin:</span> The network grows in nodes, hashrate, users, and ecosystem complexity; the ledger grows with every block</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Reproduction</div>
+<div class="grid-field"><span class="field-name">Biological:</span> Organisms produce new individuals that carry forward their essential structure</div>
+<div class="grid-field"><span class="field-name">Bitcoin:</span> The network spawns new nodes, each carrying a complete copy of the ledger and consensus rules; protocol forks generate descendant organisms that inherit the parent's full transaction history and codebase</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Heredity</div>
+<div class="grid-field"><span class="field-name">Biological:</span> Traits are passed from parent to offspring</div>
+<div class="grid-field"><span class="field-name">Bitcoin:</span> Bitcoin inherits cryptographic hashing, digital signatures, P2P networking, and "unforgeable costliness" from predecessor systems (HashCash, b-money, bit gold)</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Homeostasis</div>
+<div class="grid-field"><span class="field-name">Biological:</span> Internal conditions are maintained despite external changes</div>
+<div class="grid-field"><span class="field-name">Bitcoin:</span> The difficulty adjustment algorithm maintains a stable ten-minute block time regardless of changes in global hashrate</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Metabolism</div>
+<div class="grid-field"><span class="field-name">Biological:</span> Energy is consumed to maintain internal order</div>
+<div class="grid-field"><span class="field-name">Bitcoin:</span> Proof-of-Work consumes electrical energy to create cryptographic security and maintain the integrity of the ledger</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Cellular Organization</div>
+<div class="grid-field"><span class="field-name">Biological:</span> Organisms are composed of discrete functional units</div>
+<div class="grid-field"><span class="field-name">Bitcoin:</span> The network consists of nodes (self-sustaining functional entities); the ledger consists of blocks (discrete data cells linked in sequence)</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Response to Environment</div>
+<div class="grid-field"><span class="field-name">Biological:</span> Organisms react to external stimuli</div>
+<div class="grid-field"><span class="field-name">Bitcoin:</span> Bitcoin responds to price changes, regulatory actions, technological advances, and network attacks without central coordination</div>
+</div>
+</div>
 <p>From a thermodynamic perspective, living systems are distinguished by their capacity to decrease their internal entropy at the expense of energy drawn from the environment. In Schrödinger's formulation, life "feeds on negative entropy." <a href="#user-content-fn-4">4</a> Bitcoin does precisely this: it consumes electrical energy and uses it to impose order on an otherwise chaotic digital environment, producing an immutable, chronologically ordered record of transactions. The growing blockchain is a monument to this continuous, energy-driven ordering process.</p>
 <p>The academic paper by Abramov et al. goes further, noting that blockchain-based systems possess specific advantages over biological life that make them, in some respects, superior life forms: they can pass acquired traits to offspring (a form of Lamarckian inheritance impossible in biological systems), they possess significantly improved speed, accuracy, and redundancy in their genetic carrier, and they have potentially unlimited lifespans. <a href="#user-content-fn-3">3</a> Bitcoin, encoded in open-source software distributed across thousands of nodes worldwide, is effectively immortal as long as a single copy of its code and ledger survives anywhere on Earth.</p>
 <hr>
@@ -363,7 +437,38 @@
 <p>The first line of defense is the <strong>consensus rules</strong> enforced by every full node on the network. Any block or transaction that violates these rules is automatically rejected. This distributed response requires no central coordinator; every node independently performs the same validation, creating a massively redundant defense system.</p>
 <p>The second line of defense is the <strong>economic cost of attack</strong>. The Proof-of-Work mechanism makes it prohibitively expensive to rewrite the blockchain's history. A successful 51% attack would require an investment of billions of dollars in hardware and electricity, and would likely destroy confidence in the network, crashing its price and rendering the attacker's investment worthless.</p>
 <p>For BSV, the fixed protocol provides an additional layer of defense: a protocol that cannot be changed cannot be redirected by developers who wish to impose a different vision on the network. The Genesis Upgrade locked the BSV protocol, ensuring that no future developer can alter the organism's foundational rules. Whether this rigidity proves to be a strength or a vulnerability (biological organisms, after all, adapt to novel threats through genetic flexibility) remains to be seen. The BSV thesis is that monetary protocols are not biological organisms in this respect: they derive their value precisely from <em>not</em> changing.</p>
-<div class="table-wrapper"><table><thead><tr><th>Protocol Property</th><th>Bitcoin (BSV)</th><th>BTC</th></tr></thead><tbody><tr><td><strong>Protocol stability</strong></td><td>Fixed since Genesis Upgrade (Feb 2020)</td><td>Subject to ongoing developer-driven changes</td></tr><tr><td><strong>Block size</strong></td><td>Unbounded; scales to meet network demand</td><td>Limited (1MB base, ~4MB with SegWit witness discount)</td></tr><tr><td><strong>Scaling approach</strong></td><td>On-chain, as described in the whitepaper</td><td>Off-chain via Lightning Network and other layer-2 systems</td></tr><tr><td><strong>Script language</strong></td><td>Full original Bitcoin script, all opcodes restored</td><td>Reduced script; several original opcodes disabled</td></tr><tr><td><strong>Transaction fees</strong></td><td>Low, enabling microtransactions</td><td>Higher and more volatile</td></tr><tr><td><strong>Stated purpose</strong></td><td>Peer-to-peer electronic cash and global data ledger</td><td>Store of value; "digital gold"</td></tr></tbody></table></div>
+<div class="styled-grid">
+<div class="grid-row">
+<div class="grid-label">Protocol stability</div>
+<div class="grid-field"><span class="field-name">Bitcoin (BSV):</span> Fixed since Genesis Upgrade (Feb 2020)</div>
+<div class="grid-field"><span class="field-name">BTC:</span> Subject to ongoing developer-driven changes</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Block size</div>
+<div class="grid-field"><span class="field-name">Bitcoin (BSV):</span> Unbounded; scales to meet network demand</div>
+<div class="grid-field"><span class="field-name">BTC:</span> Limited (1MB base, ~4MB with SegWit witness discount)</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Scaling approach</div>
+<div class="grid-field"><span class="field-name">Bitcoin (BSV):</span> On-chain, as described in the whitepaper</div>
+<div class="grid-field"><span class="field-name">BTC:</span> Off-chain via Lightning Network and other layer-2 systems</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Script language</div>
+<div class="grid-field"><span class="field-name">Bitcoin (BSV):</span> Full original Bitcoin script, all opcodes restored</div>
+<div class="grid-field"><span class="field-name">BTC:</span> Reduced script; several original opcodes disabled</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Transaction fees</div>
+<div class="grid-field"><span class="field-name">Bitcoin (BSV):</span> Low, enabling microtransactions</div>
+<div class="grid-field"><span class="field-name">BTC:</span> Higher and more volatile</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Stated purpose</div>
+<div class="grid-field"><span class="field-name">Bitcoin (BSV):</span> Peer-to-peer electronic cash and global data ledger</div>
+<div class="grid-field"><span class="field-name">BTC:</span> Store of value; "digital gold"</div>
+</div>
+</div>
 <hr>
 <h2>4. Hard Forks as Speciation Events: The Evolutionary History of Bitcoin</h2>
 <p>The biological concept of speciation, the process by which a single species diverges into two or more distinct species, provides a powerful lens for understanding Bitcoin's fork history. In evolutionary biology, speciation occurs when a population becomes reproductively isolated from the parent population, allowing it to evolve independently. The defining criterion is that the two populations can no longer interbreed and produce fertile offspring.</p>
@@ -404,7 +509,38 @@
 <p>Bitcoin inverts this relationship. No individual, corporation, or government controls the protocol. The rules are mathematical, not political. The organism serves all participants equally, or, more precisely, it serves anyone who follows its rules, regardless of who they are. This is a mutualism without a master, a monetary symbiosis that is genuinely, structurally egalitarian.</p>
 <h3>6.2 The Terms of the Exchange</h3>
 <p>The following table summarizes the symbiotic contract:</p>
-<div class="table-wrapper"><table><thead><tr><th>Party</th><th>Contribution</th><th>Benefit Received</th></tr></thead><tbody><tr><td><strong>Bitcoin (the organism)</strong></td><td>Block subsidies + transaction fees</td><td>Energy, hardware, social consensus, network security</td></tr><tr><td><strong>Miners</strong></td><td>Electrical energy, ASIC hardware, computational work</td><td>Block subsidies + transaction fees</td></tr><tr><td><strong>Node Operators</strong></td><td>Hardware, bandwidth, storage, maintenance</td><td>A trustworthy, independently verified copy of the ledger</td></tr><tr><td><strong>Users and Businesses</strong></td><td>Demand, liquidity, adoption, social consensus</td><td>A censorship-resistant, tamper-proof transactional system</td></tr><tr><td><strong>Developers</strong></td><td>Code, intellectual labor, protocol maintenance</td><td>Reputation, community standing, participation in a transformative system</td></tr><tr><td><strong>Humanity (collectively)</strong></td><td>The infrastructure of civilization (energy grids, internet, legal systems)</td><td>A new monetary layer and universal data infrastructure: provably honest, mathematically enforced, and politically neutral</td></tr></tbody></table></div>
+<div class="styled-grid">
+<div class="grid-row">
+<div class="grid-label">Bitcoin (the organism)</div>
+<div class="grid-field"><span class="field-name">Contribution:</span> Block subsidies + transaction fees</div>
+<div class="grid-field"><span class="field-name">Benefit Received:</span> Energy, hardware, social consensus, network security</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Miners</div>
+<div class="grid-field"><span class="field-name">Contribution:</span> Electrical energy, ASIC hardware, computational work</div>
+<div class="grid-field"><span class="field-name">Benefit Received:</span> Block subsidies + transaction fees</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Node Operators</div>
+<div class="grid-field"><span class="field-name">Contribution:</span> Hardware, bandwidth, storage, maintenance</div>
+<div class="grid-field"><span class="field-name">Benefit Received:</span> A trustworthy, independently verified copy of the ledger</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Users and Businesses</div>
+<div class="grid-field"><span class="field-name">Contribution:</span> Demand, liquidity, adoption, social consensus</div>
+<div class="grid-field"><span class="field-name">Benefit Received:</span> A censorship-resistant, tamper-proof transactional system</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Developers</div>
+<div class="grid-field"><span class="field-name">Contribution:</span> Code, intellectual labor, protocol maintenance</div>
+<div class="grid-field"><span class="field-name">Benefit Received:</span> Reputation, community standing, participation in a transformative system</div>
+</div>
+<div class="grid-row">
+<div class="grid-label">Humanity (collectively)</div>
+<div class="grid-field"><span class="field-name">Contribution:</span> The infrastructure of civilization (energy grids, internet, legal systems)</div>
+<div class="grid-field"><span class="field-name">Benefit Received:</span> A new monetary layer and universal data infrastructure: provably honest, mathematically enforced, and politically neutral</div>
+</div>
+</div>
 <hr>
 <h2>7. The Lindy Effect and the Organism's Long-Term Viability</h2>
 <p>The <strong>Lindy Effect</strong> proposes that the future life expectancy of non-perishable things is proportional to their current age. The longer something has survived, the longer it is likely to continue to survive. This principle, formalized by Nassim Taleb, applies with particular force to Bitcoin. <a href="#user-content-fn-11">11</a></p>
