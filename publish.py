@@ -306,6 +306,35 @@ def _tables_to_medium_lists(html: str) -> str:
     )
 
 
+def _remove_hr_before_headings(html: str) -> str:
+    """Remove <hr> tags immediately before <h2> (causes extra spacing on Medium)."""
+    return re.sub(r'<hr>\s*\n?(<h2>)', r'\1', html)
+
+
+def _insert_toc(html: str) -> str:
+    """Insert a Table of Contents after the Abstract section."""
+    headings = re.findall(r'<h2>(\d+\.\s+.+?)</h2>', html)
+    if not headings:
+        return html
+    toc_lines = ['<h2>Table of Contents</h2>']
+    for h in headings:
+        num = re.match(r'(\d+)\.', h)
+        if num:
+            toc_lines.append(
+                f'<p><strong>{num.group(1)}.</strong> {h[len(num.group(0)):].strip()}</p>'
+            )
+    toc_block = '\n'.join(toc_lines)
+    # Insert after the Abstract paragraph (first </p> after <h2>Abstract</h2>)
+    html = re.sub(
+        r'(<h2>Abstract</h2>\s*<p>.*?</p>)',
+        r'\1\n' + toc_block,
+        html,
+        count=1,
+        flags=re.DOTALL,
+    )
+    return html
+
+
 def convert_markdown(md_text: str) -> str:
     """Convert Markdown to HTML, using python-markdown if available."""
     md_text = _strip_metadata_lines(md_text)
@@ -318,6 +347,8 @@ def convert_markdown(md_text: str) -> str:
         html = _markdown_to_html_fallback(md_text)
     html = _merge_consecutive_lists(html)
     html = _tables_to_medium_lists(html)
+    html = _remove_hr_before_headings(html)
+    html = _insert_toc(html)
     return html
 
 
