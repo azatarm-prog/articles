@@ -350,11 +350,9 @@ def _fix_footnotes_for_medium(html: str) -> str:
     return html
 
 
-def _headings_to_h1(html: str) -> str:
-    """Convert numbered <h2>/<h3> sections to <h1> for Medium."""
-    html = re.sub(r'<h[23]>(\d+\..*?)</h[23]>', r'<h1>\1</h1>', html)
-    # Also convert unnumbered <h3> subsection titles
-    html = re.sub(r'<h3>(.*?)</h3>', r'<h1>\1</h1>', html)
+def _headings_to_h2(html: str) -> str:
+    """Convert <h3> subsection headings to <h2> for Medium (h2 sections stay as-is)."""
+    html = re.sub(r'<h3>(.*?)</h3>', r'<h2>\1</h2>', html)
     return html
 
 
@@ -372,7 +370,7 @@ def convert_markdown(md_text: str) -> str:
     html = _tables_to_prose(html)
     html = _remove_hr_before_headings(html)
     html = _insert_toc(html)
-    html = _headings_to_h1(html)
+    html = _headings_to_h2(html)
     html = _fix_footnotes_for_medium(html)
     return html
 
